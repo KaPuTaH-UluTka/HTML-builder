@@ -55,34 +55,37 @@ fs.readdir(dirWithStyles,{withFileTypes: true},(err,files)=> {
 });
 
 const assets = path.join(__dirname,'assets');
-const assetsCopy = path.join(projectDist,'assets/');
+const assetsCopy = path.join(projectDist,'assets');
+
+
 
 fs.mkdir(assetsCopy,{recursive: true}, err => {
   if (err) throw  err;
 });
 
-// fs.readdir(assetsCopy, {withFileTypes: true}, (err, assets) => {
-//   if (err) throw  err;
-//   assets.forEach((el) => {
-//     fs.unlink(assetsCopy + `${el.name}`, err => {
-//       if (err) throw err;
-//     });
-//   });
-// });
 fs.readdir(assets, { withFileTypes: true },(err, dir) => {
   if (err) throw  err;
-  dir.filter(d => d.isDirectory()).map(d => d.name);
-  // dir.forEach((el) => {
-  //   fs.readdir(el.name, {withFileTypes: true}, (err, el) => {
-  //     if (err) throw  err;
-  //     el.forEach((el) => {
-  //       const assets = path.join(__dirname, `${el.name}`);
-  //       fs.copyFile(assets + `${el.name}`, assetsCopy + `${el.name}`, err => {
-  //         if (err) throw  err;
-  //         else console.log('All right!');
-  //       });
-  //     });
-  //   });
-  // });
+  const finalDir = dir.filter(d => d.isDirectory());
+  finalDir.forEach((folder) => {
+    fs.mkdir(assetsCopy + `/${folder.name}`,{recursive: true}, err => {
+      if (err) throw  err;
+    });
+    fs.readdir(assetsCopy + `/${folder.name}`, {withFileTypes: true}, (err, copyFiles) => {
+      if (err) throw  err;
+      copyFiles.forEach((el) => {
+        fs.unlink(assetsCopy + `/${folder.name}` + `/${el.name}`, err => {
+          if (err) throw err;
+        });
+      });
+    });
+    fs.readdir(assets + `/${folder.name}`, {withFileTypes: true}, (err, files) => {
+      if (err) throw  err;
+      files.forEach((el) => {
+        fs.copyFile(assets + `/${folder.name}` +`/${el.name}`, assetsCopy + `/${folder.name}` +`/${el.name}`, err => {
+          if (err) throw  err;
+        });
+      });
+    });
+  });
 });
 
