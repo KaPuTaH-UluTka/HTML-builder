@@ -14,24 +14,25 @@ fs.writeFile('06-build-page/project-dist/index.html', '', 'utf-8', err => {
 fs.copyFile('06-build-page/template.html', '06-build-page/project-dist/index.html', err => {
   if (err) throw  err;
 });
-const createReader = fs.createReadStream('06-build-page/project-dist/index.html');
-
-fs.readFile('06-build-page/project-dist/index.html', 'utf-8', (err, data) => {
-  if (err) throw err;
-  fs.readdir('06-build-page/components', {withFileTypes: true}, (err, files) => {
-    if (err) throw  err;
-    files.forEach((el) => {
-      fs.readFile('06-build-page/components/' + `${el.name}`, 'utf-8', (err, data1) => {
-        if (err) throw err;
-        data = data.replace('{{' + `${el.name.slice(0, el.name.indexOf('.'))}` + '}}', data1);
-        fs.writeFile(
-          '06-build-page/project-dist/index.html', data, 'utf-8', (err) => {
-            if (err) throw err;
-          });
+// const createReader = fs.createReadStream('06-build-page/project-dist/index.html');
+function createHtml() {
+  fs.readFile('06-build-page/project-dist/index.html', 'utf-8', (err, data) => {
+    if (err) throw err;
+    fs.readdir('06-build-page/components', {withFileTypes: true}, (err, files) => {
+      if (err) throw  err;
+      files.forEach((el) => {
+        fs.readFile('06-build-page/components/' + `${el.name}`, 'utf-8', (err, data1) => {
+          if (err) throw err;
+          data = data.replace(new RegExp('{{' + `${el.name.slice(0, el.name.indexOf('.'))}` + '}}'), data1);
+          fs.writeFile(
+            '06-build-page/project-dist/index.html', data, 'utf-8', (err) => {
+              if (err) throw err;
+            });
+        });
       });
     });
   });
-});
+}
 
 const style = path.join(projectDist,'style.css');
 fs.writeFile(style,'',err=> {
@@ -89,3 +90,7 @@ fs.readdir(assets, { withFileTypes: true },(err, dir) => {
   });
 });
 
+createHtml();
+createHtml();
+createHtml();
+createHtml();
