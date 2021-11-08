@@ -126,6 +126,7 @@ async function buildPage() {
   await createHtml();
   await createCss();
   await createAssets();
+  console.log('ok');
 }
 
 buildPage();
